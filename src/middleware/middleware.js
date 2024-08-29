@@ -5,27 +5,38 @@ const jwt_secret = process.env.SECRET_JWT;
 
 const authenticateToken = async (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
+    const identifierFrida = req.headers['x-frida-identifier'];
     const { deviceId, buildId } = req.body;
 
-    if (!token) return res.status(401).json({ status: 401, success: false, message: 'Access Denied' });
+    if (!token || !identifierFrida || !identifierFrida.startsWith('frida-script-')) {
+        return res.status(401).json({ status: 401, success: false, message: 'Access Denied' });
+    }
 
     jwt.verify(token, jwt_secret, async (err, payload) => {
-        if (err) return res.status(403).json({ status: 403, success: false, message: 'Invalid Token' });
+        if (err) {
+            return res.status(403).json({ status: 403, success: false, message: 'Invalid Token' });
+        }
 
         const user = await UserModel.findOne({ username: payload.username });
-        if (!user) return res.status(403).json({ status: 403, success: false, message: 'User not found' });
+        if (!user) {
+            return res.status(403).json({ status: 403, success: false, message: 'User not found' });
+        }
 
-        const dbDeviceId = user.deviceId;
-        const dbBuildId = user.buildId;
+        const { device } = user;
 
-        const tokenDeviceId = payload.deviceId;
-        const tokenBuildId = payload.buildId;
+        const dbDeviceId = device.deviceId;
+        const dbBuildId = device.buildId;
+        const dbCustomDeviceId = device.customDeviceId;
+        const dbCustomBuildId = device.customBuildId;
+
+        const tokenCustomDeviceId = payload.customDeviceId;
+        const tokenCustomBuildId = payload.customBuildId;
 
         if (
-            dbDeviceId !== tokenDeviceId ||
-            dbBuildId !== tokenBuildId ||
-            deviceId !== tokenDeviceId ||
-            buildId !== tokenBuildId
+            dbDeviceId !== deviceId ||
+            dbBuildId !== buildId ||
+            dbCustomDeviceId !== tokenCustomDeviceId ||
+            dbCustomBuildId !== tokenCustomBuildId
         ) {
             return res.status(403).json({ status: 403, success: false, message: 'Device information does not match.' });
         }

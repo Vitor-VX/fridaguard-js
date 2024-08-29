@@ -12,31 +12,41 @@ module.exports = class UserManager {
     
             return {
                 success: true,
-                customDeviceId: user.customDeviceId,
-                customBuildId: user.customBuildId
+                deviceId: user.device.deviceId,
+                buildId: user.device.buildId,
+                customDeviceId: user.device.customDeviceId,
+                customBuildId: user.device.customBuildId
             };
         } catch (error) {
-            console.error("Error fetching device info:", error);
+            console.error('Error fetching device info:', error);
             return { success: false, message: 'Error fetching device info' };
         }
     }
     
-    static async saveDeviceInfo(username, customDeviceId, customBuildId) {
+    static async saveDeviceInfo(username, customDeviceId, customBuildId, deviceId, buildId) {
         try {
             const saveDevice = await UserModel.updateOne(
                 { username },
-                { $set: { customDeviceId, customBuildId } }
+                {
+                    $set: {
+                        'device.deviceId': deviceId,
+                        'device.buildId': buildId,
+                        'device.customDeviceId': customDeviceId,
+                        'device.customBuildId': customBuildId
+                    }
+                }
             );
-
-            if (saveDevice != null) {
-                return { success: true, message: 'Infos save device completed.' };
+    
+            if (saveDevice.nModified > 0 || saveDevice.matchedCount > 0) {
+                return { success: true, message: 'Device info saved successfully.' };
             }
-
-            return { success: false, message: 'Error in save device.' };
+    
+            return { success: true, message: 'Device info unchanged, but save successful.' };
         } catch (error) {
-            return console.log('Error save device info: ' + error);
+            console.error('Error saving device info:', error);
+            return { success: false, message: 'Error saving device info.' };
         }
-    }
+    }    
 
     static async checkPassword(username, password) {
         try {

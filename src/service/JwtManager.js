@@ -3,26 +3,17 @@ const jwt = require('jsonwebtoken');
 module.exports = class JwtManager {
     static secretKey = process.env.SECRET_JWT
 
-    static test() {
-        const generatePublicToken = (payload) => {
-            return jwt.sign(payload, this.secretKey, {
-                algorithm: 'HS256', // Algoritmo de assinatura
-                // Não definir expiresIn para que o token não expire
-            });
-        };
-        
-        // Exemplo de payload
+    static generatePublicToken() {
         const payload = {
-            role: 'public', // Informações básicas, por exemplo
-            permissions: ['read'] // Permissões básicas para a API
+            role: 'public', 
+            permissions: ['read'] 
         };
         
-        // Gerar token
-        const token = generatePublicToken(payload);
+        const token = jwt.sign(payload, this.secretKey, { algorithm: 'HS256' });
         console.log('Public JWT:', token);
     }
 
-    static generateToken(payload, expiresIn = '1h') {
+    static generateToken(payload, expiresIn = '10s') {
         try {
             const token = jwt.sign(payload, this.secretKey, { expiresIn });
             return { success: true, token };

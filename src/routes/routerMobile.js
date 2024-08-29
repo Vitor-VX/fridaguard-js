@@ -9,11 +9,9 @@ const generateCustomId = () => {
     return crypto.randomBytes(16).toString('hex');
 };
 
+const encryptionKey = crypto.randomBytes(32);
+const iv = crypto.randomBytes(16);
 
-const encryptionKey = crypto.randomBytes(32); // Chave de 256 bits para AES-256
-const iv = crypto.randomBytes(16); // Vetor de inicialização (IV) de 128 bits para AES
-
-// Função para criptografar texto
 const encrypt = (text) => {
     const cipher = crypto.createCipheriv('aes-256-cbc', encryptionKey, iv);
     let encrypted = cipher.update(text, 'utf8', 'hex');
@@ -21,7 +19,6 @@ const encrypt = (text) => {
     return encrypted;
 };
 
-// Função para descriptografar texto
 const decrypt = (encryptedText) => {
     const decipher = crypto.createDecipheriv('aes-256-cbc', encryptionKey, iv);
     let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
@@ -33,11 +30,6 @@ router.get('/get-app-id', authenticatePublicToken, async (req, res) => {
     try {
         const customDeviceId = generateCustomId();
         const customBuildId = generateCustomId();
-
-        const encryptedDeviceId = encrypt(customDeviceId);
-        const encryptedBuildId = encrypt(customBuildId);
-
-        //await saveCustomIdsToDatabase(encryptedDeviceId, encryptedBuildId);
 
         res.status(200).json({
             status: 200,

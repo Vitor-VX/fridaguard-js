@@ -11,16 +11,23 @@ const userSchema = new Schema({
         required: true,
         unique: true
     },
-    customDeviceId: {
-        type: String,
-        default: ''
-    },
-    customBuildId: {
-        type: String,
-        default: ''
-    },
-    appId: {
-        type: String
+    device: {
+        deviceId: {
+            type: String,
+            default: ''
+        },
+        buildId: {
+            type: String,
+            default: ''
+        },
+        customDeviceId: {
+            type: String,
+            default: ''
+        },
+        customBuildId: {
+            type: String,
+            default: ''
+        }
     }
 });
 
