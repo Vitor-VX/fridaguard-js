@@ -102,7 +102,7 @@ router.post('/login-user', [
 
 
 router.post('/verify-token', authenticateToken, (req, res) => {
-    return res.status(201).json({ status: 201, success: true, message: 'Code generate', data: [{ code: {  } }] });
+    return res.status(201).json({ status: 201, success: true, message: 'Code generate', data: [{ code: {} }] });
 });
 
 

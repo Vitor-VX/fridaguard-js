@@ -17,8 +17,5 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.1",
     "uuid": "^10.0.0"
-  },
-  "engines": {
-    "node": "16.x"
   }
 }
