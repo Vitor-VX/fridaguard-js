@@ -6,7 +6,6 @@ const jwt_secret = process.env.SECRET_JWT;
 const authenticateToken = async (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
     const identifierFrida = req.headers['x-frida-identifier'];
-    const { deviceId, buildId } = req.body;
 
     if (!token || !identifierFrida || !identifierFrida.startsWith('frida-script-')) {
         return res.status(401).json({ status: 401, success: false, message: 'Access Denied' });
@@ -33,8 +32,6 @@ const authenticateToken = async (req, res, next) => {
         const tokenCustomBuildId = payload.customBuildId;
 
         if (
-            dbDeviceId !== deviceId ||
-            dbBuildId !== buildId ||
             dbCustomDeviceId !== tokenCustomDeviceId ||
             dbCustomBuildId !== tokenCustomBuildId
         ) {
@@ -45,7 +42,6 @@ const authenticateToken = async (req, res, next) => {
         next();
     });
 };
-
 
 const authenticatePublicToken = (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
